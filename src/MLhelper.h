@@ -1,8 +1,8 @@
-#ifndef CLEANUP_H
-#define CLEANUP_H
+// #ifndef CLEANUP_H
+// #define CLEANUP_H
 
 #include <utility>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 //Cleanup function template
 template<typename T, typename... Args>
@@ -44,4 +44,4 @@ inline void cleanup<SDL_Surface>(SDL_Surface *surf){
 	SDL_FreeSurface(surf);
 }
 
-#endif
+// #endif

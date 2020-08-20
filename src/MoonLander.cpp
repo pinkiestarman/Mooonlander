@@ -1,6 +1,6 @@
 #include "SDL2/SDL.h"
 #include "iostream"
-//#include "MLhelper.h"
+#include "MLhelper.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_Delay(30);
     }
-    //cleanup(renderer,window);
+    cleanup(renderer,window);
     SDL_Quit();
     return 0;
 }

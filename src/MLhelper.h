@@ -2,7 +2,7 @@
 #define CLEANUP_H
 
 #include <utility>
-#include <SDL.h>
+#include "SDL/SDL.h"
 
 //Cleanup function template
 template<typename T, typename... Args>
@@ -45,8 +45,3 @@ inline void cleanup<SDL_Surface>(SDL_Surface *surf){
 }
 
 #endif
-
-//SDL_Init Error logger
-void logSDLError(std::ostream &os, const std::string &msg){
-	os << msg << " error: " << SDL_GetError() << std::endl;
-}

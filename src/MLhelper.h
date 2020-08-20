@@ -1,9 +1,11 @@
-// #ifndef CLEANUP_H
-// #define CLEANUP_H
-
 #include <utility>
 #include "SDL2/SDL.h"
+#include <iostream>
 
+//SDL_Init Error logger
+void logSDLError(std::ostream &os, const std::string &msg){
+	os << msg << " error: " << "SDL_GetError()" << std::endl;
+}
 //Cleanup function template
 template<typename T, typename... Args>
 void cleanup(T *t, Args&&... args){

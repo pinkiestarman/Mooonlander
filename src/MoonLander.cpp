@@ -6,10 +6,7 @@ const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
 
-//SDL_Init Error logger
-void logSDLError(std::ostream &os, const std::string &msg){
-	os << msg << " error: " << "SDL_GetError()" << std::endl;
-}
+
 
 class player{
     public:
@@ -19,6 +16,8 @@ class player{
         float y; //Position und Größe des Players
         float veloh; //Geschwindigkeit
         float velov;
+    private:
+        float velo = veloh + velov;
 };
 int main(int argc, char *argv[])
 {
@@ -66,6 +65,8 @@ int main(int argc, char *argv[])
         player1Rect.y = player1.y;
         while (SDL_PollEvent(&e))
         {
+            if (e.key.keysym.sym == SDLK_ESCAPE)
+                quit =true;
             if (e.type == SDL_QUIT)
                 quit = true;
             if (e.type == SDL_KEYDOWN)
@@ -97,11 +98,16 @@ int main(int argc, char *argv[])
         if(player1.veloh < -3) player1.veloh=-3;
         if(player1.velov > 3) player1.velov=3;
         if(player1.velov < -3) player1.velov=-3;
-        if(player1.x <=0 || player1.x >= SCREEN_WIDTH-player1.w) player1.veloh *= -1;
-        if(player1.y <=0 || player1.y >= SCREEN_HEIGHT-player1.h) player1.velov *= -1;
+        if(player1.x <=0 || player1.x >= SCREEN_WIDTH-player1.w) 
+            player1.veloh *= -1;
+        if(player1.y <=0 || player1.y >= SCREEN_HEIGHT-(player1.h+1)) 
+            player1.velov *= -1;
+        
         player1.x+=player1.veloh;
         player1.y+=player1.velov;
         SDL_SetRenderDrawColor(renderer, 0,0,0,0);
+        if(player1.y >= SCREEN_HEIGHT-player1.h && player1.velov + player1.veloh > 2 )
+            SDL_SetRenderDrawColor(renderer, 200,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &player1Rect);

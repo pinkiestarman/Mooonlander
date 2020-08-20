@@ -1,18 +1,16 @@
-#obj/spual.o: src/spual.cpp
-#	g++ src/spual.cpp -o obj/spual.o -lSDL2 
-
 libs ?= -lSDL2
 
 
-ALL := spual
+ALL := MoonLander
 
-spual: obj/spual.o
-	g++ obj/*.o -o spual $(libs) `sdl2-config --cflags --libs`
+MoonLander: obj/MoonLander.o
+	g++ obj/*.o -o MoonLander $(libs) `sdl2-config --cflags --libs`
 
-obj/%.o: src/%.cpp
+obj/%.o: src/%.cpp src/MLhelper.h
 	$(info $< => $@)
 	g++ -c $< -o $@ `sdl2-config --cflags --libs`
 
 
 clean:
 	rm obj/*.o
+	

@@ -1,6 +1,7 @@
 #include "SDL2/SDL.h"
 #include "iostream"
 #include "MLhelper.h"
+#include <math.h>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -16,8 +17,25 @@ class player{
         float y; //Position und Größe des Players
         float veloh; //Geschwindigkeit
         float velov;
-    private:
-        float velo = veloh + velov;
+        player(int height, int width, float x_pos, float y_pos,float horizontal_speed, float vertical_speed){
+            h = height;
+            w = width;
+            x = x_pos;
+            y = y_pos;
+            veloh = horizontal_speed;
+            velov = vertical_speed;
+        }
+        player(int height, int width, float x_pos, float y_pos){
+            h = height;
+            w = width;
+            x = x_pos;
+            y = y_pos;
+            veloh = 0;
+            velov = 0;
+        }
+        double speed(){
+            return fabs(velov + veloh);
+        }
 };
 int main(int argc, char *argv[])
 {
@@ -45,13 +63,7 @@ int main(int argc, char *argv[])
 
     
 
-    player player1;
-    player1.h = 22;
-    player1.w = 32;
-    player1.x = SCREEN_WIDTH/2;
-    player1.y = 2;
-    player1.veloh = 0;
-    player1.velov = 0;
+    player player1(22,32,SCREEN_WIDTH/2,1);
 
     SDL_Rect player1Rect;
     player1Rect.h = player1.h;
@@ -106,7 +118,7 @@ int main(int argc, char *argv[])
         player1.x+=player1.veloh;
         player1.y+=player1.velov;
         SDL_SetRenderDrawColor(renderer, 0,0,0,0);
-        if(player1.y >= SCREEN_HEIGHT-player1.h && player1.velov + player1.veloh > 2 )
+        if(player1.y >= SCREEN_HEIGHT-player1.h && player1.speed() > 2 )
             SDL_SetRenderDrawColor(renderer, 200,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255);

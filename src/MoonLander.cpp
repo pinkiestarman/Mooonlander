@@ -1,7 +1,7 @@
 #include "SDL2/SDL.h"
 #include "iostream"
 #include "MLhelper.h"
-#include <math.h>
+#include "math.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -10,33 +10,65 @@ const int SCREEN_HEIGHT = 600;
 
 
 class player{
-    public:
-        int h;
-        int w;
-        float x;
-        float y; //Position und Größe des Players
-        float veloh; //Geschwindigkeit
-        float velov;
-        player(int height, int width, float x_pos, float y_pos,float horizontal_speed, float vertical_speed){
-            h = height;
-            w = width;
-            x = x_pos;
-            y = y_pos;
-            veloh = horizontal_speed;
-            velov = vertical_speed;
+    private:
+        SDL_Rect prect; //Position und Größe des Players
+        float veloh; //Geschwindigkeit horizontal
+        float velov; //vertical speed
+        double speedh(){
+            return veloh/400;
         }
-        player(int height, int width, float x_pos, float y_pos){
-            h = height;
-            w = width;
-            x = x_pos;
-            y = y_pos;
+        double speedv(){
+            return velov/500;
+        }
+    public:
+        player( int x_pos, int y_pos, int height, int width){
             veloh = 0;
             velov = 0;
+            prect = {x_pos,y_pos,height,width};
         }
         double speed(){
             return fabs(velov + veloh);
         }
+        int x(){
+            return prect.x;
+        }
+        int y(){
+            return prect.y;
+        }
+        void boostv(int d){
+            velov+=d;
+        };
+        void boosth(int d){
+            veloh+=d;
+        }
+        void changeDirection(){
+            velov*=-.9;
+        }
+        void touchsides(){
+            if(prect.x <= 1 || prect.x >= SCREEN_WIDTH-(prect.w-1))veloh*=-1;
+        }
+        bool touchdown(){
+            return (prect.y >= SCREEN_HEIGHT-(prect.h+1))?true:false;
+        }
+        SDL_Rect* rectp(){
+            return &prect;
+        }
+        void update(){
+            prect.x += speedh();
+            prect.y += speedv();
+        }
+        int gravity(){
+            // int dist = SCREEN_HEIGHT - prect.y;
+            return ((SCREEN_HEIGHT - (SCREEN_HEIGHT - prect.y))/10);
+        }
 };
+// Function to calculate distance 
+float distance(int x1, int y1, int x2, int y2) 
+{ 
+    // Calculating distance 
+    return sqrt(pow(x2 - x1, 2) +  
+                pow(y2 - y1, 2) * 1.0); 
+} 
 int main(int argc, char *argv[])
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -60,21 +92,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-
-    
-
-    player player1(22,32,SCREEN_WIDTH/2,1);
-
-    SDL_Rect player1Rect;
-    player1Rect.h = player1.h;
-    player1Rect.w = player1.w;
-    
+    player player1(SCREEN_WIDTH/2,1,32,32);
+    const int BOOST = 100;
     SDL_Event e;
     bool quit = 0;
     while (!quit)
     {
-        player1Rect.x = player1.x;
-        player1Rect.y = player1.y;
         while (SDL_PollEvent(&e))
         {
             if (e.key.keysym.sym == SDLK_ESCAPE)
@@ -87,44 +110,36 @@ int main(int argc, char *argv[])
                 {
 
                 case SDLK_UP:
-                    player1.velov-=.1;
+                    player1.boostv(-BOOST);
                     break;
                 case SDLK_DOWN:
-                    player1.velov+=.1;
+                    player1.boostv(BOOST);
                     break;
                 case SDLK_RIGHT:
-                    player1.veloh+=.1;
+                    player1.boosth(BOOST);
                     break;
                 case SDLK_LEFT:
-                    player1.veloh-=.1;
+                    player1.boosth(-BOOST);
                     break;
 
                 default:
-                    player1.velov+=.1;
+                    
                     break;
                 }
-
             }
         }
-        if(player1.veloh > 3) player1.veloh=3;
-        if(player1.veloh < -3) player1.veloh=-3;
-        if(player1.velov > 3) player1.velov=3;
-        if(player1.velov < -3) player1.velov=-3;
-        if(player1.x <=0 || player1.x >= SCREEN_WIDTH-player1.w) 
-            player1.veloh *= -1;
-        if(player1.y <=0 || player1.y >= SCREEN_HEIGHT-(player1.h+1)) 
-            player1.velov *= -1;
         
-        player1.x+=player1.veloh;
-        player1.y+=player1.velov;
+        player1.boostv(BOOST*.5);//Gravity
+        if(player1.touchdown()) player1.changeDirection();
+        player1.touchsides();
+        player1.update();
         SDL_SetRenderDrawColor(renderer, 0,0,0,0);
-        if(player1.y >= SCREEN_HEIGHT-player1.h && player1.speed() > 2 )
+        if(player1.touchdown() && player1.speed() > 2000 )
             SDL_SetRenderDrawColor(renderer, 200,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(renderer, &player1Rect);
+        SDL_RenderFillRect(renderer, player1.rectp());
         SDL_RenderPresent(renderer);
-        SDL_Delay(30);
     }
     cleanup(renderer,window);
     SDL_Quit();

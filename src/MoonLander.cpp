@@ -14,8 +14,10 @@ class player{
         SDL_Rect prect; //Position und Größe des Players
         float veloh; //Geschwindigkeit horizontal
         float velov; //vertical speed
+        double grav;
+        int hipoint;
         double speedh(){
-            return veloh/400;
+            return veloh/1000;
         }
         double speedv(){
             return velov/500;
@@ -25,6 +27,7 @@ class player{
             veloh = 0;
             velov = 0;
             prect = {x_pos,y_pos,height,width};
+            grav =1;
         }
         double speed(){
             return fabs(velov + veloh);
@@ -42,7 +45,8 @@ class player{
             veloh+=d;
         }
         void changeDirection(){
-            velov*=-.9;
+            velov *= -.9;
+            grav += .1;
         }
         void touchsides(){
             if(prect.x <= 1 || prect.x >= SCREEN_WIDTH-(prect.w-1))veloh*=-1;
@@ -59,7 +63,7 @@ class player{
         }
         int gravity(){
             // int dist = SCREEN_HEIGHT - prect.y;
-            return ((SCREEN_HEIGHT - (SCREEN_HEIGHT - prect.y))/10);
+            return grav;
         }
 };
 // Function to calculate distance 
@@ -128,9 +132,9 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        
-        player1.boostv(BOOST*.5);//Gravity
+               
         if(player1.touchdown()) player1.changeDirection();
+        player1.boostv(BOOST*player1.gravity());//Gravity
         player1.touchsides();
         player1.update();
         SDL_SetRenderDrawColor(renderer, 0,0,0,0);

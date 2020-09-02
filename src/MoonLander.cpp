@@ -1,33 +1,34 @@
 #include "SDL2/SDL.h"
-#include "iostream"
-#include "MLhelper.h"
+#include <iostream>
+#include <MLhelper.h>
+#include <utility>
+#include <string>
 #include "math.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
 
+//std:: << "Get Pref Path:"<< SDL_GetPrefPath("Pinkie Starman","Mooon Lander") << "and Base Path:" << SDL_GetBasePath() << std::endl;
 
-
-class player{
+class Player{
     private:
         SDL_Rect prect; //Position und Größe des Players
         float veloh; //Geschwindigkeit horizontal
         float velov; //vertical speed
         double grav;
-        int hipoint;
         double speedh(){
-            return veloh/1000;
+            return veloh/500;
         }
         double speedv(){
             return velov/500;
         }
     public:
-        player( int x_pos, int y_pos, int height, int width){
+        Player( int x_pos, int y_pos, int height, int width){
             veloh = 0;
             velov = 0;
             prect = {x_pos,y_pos,height,width};
-            grav =1;
+            grav = .1;
         }
         double speed(){
             return fabs(velov + veloh);
@@ -45,14 +46,14 @@ class player{
             veloh+=d;
         }
         void changeDirection(){
-            velov *= -.9;
-            grav += .1;
+            //velov *= -1;
+            //grav += .1;
         }
         void touchsides(){
             if(prect.x <= 1 || prect.x >= SCREEN_WIDTH-(prect.w-1))veloh*=-1;
         }
         bool touchdown(){
-            return (prect.y >= SCREEN_HEIGHT-(prect.h+1))?true:false;
+            return (prect.y >= SCREEN_HEIGHT-(prect.h+50))?true:false;
         }
         SDL_Rect* rectp(){
             return &prect;
@@ -66,13 +67,19 @@ class player{
             return grav;
         }
 };
+class Landing{
+    private:
+        int x;
+        
+};
 // Function to calculate distance 
 float distance(int x1, int y1, int x2, int y2) 
 { 
     // Calculating distance 
     return sqrt(pow(x2 - x1, 2) +  
                 pow(y2 - y1, 2) * 1.0); 
-} 
+}
+
 int main(int argc, char *argv[])
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -96,10 +103,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    player player1(SCREEN_WIDTH/2,1,32,32);
+    Player player1(SCREEN_WIDTH/2,1,62,32);
     const int BOOST = 100;
     SDL_Event e;
     bool quit = 0;
+    bool end = 0;
     while (!quit)
     {
         while (SDL_PollEvent(&e))
@@ -133,19 +141,29 @@ int main(int argc, char *argv[])
             }
         }
                
-        if(player1.touchdown()) player1.changeDirection();
-        player1.boostv(BOOST*player1.gravity());//Gravity
+        //player1.boostv(BOOST*player1.gravity());//Gravity
         player1.touchsides();
         player1.update();
         SDL_SetRenderDrawColor(renderer, 0,0,0,0);
-        if(player1.touchdown() && player1.speed() > 2000 )
-            SDL_SetRenderDrawColor(renderer, 200,0,0,255);
+        if(player1.touchdown()){
+            if(player1.speed() > 2000){
+                SDL_SetRenderDrawColor(renderer, 200,0,0,255);
+                }
+            else
+            {
+                SDL_SetRenderDrawColor(renderer,0,200,200,SDL_ALPHA_OPAQUE);
+            }
+            
+        }
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, player1.rectp());
+        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT-50,SCREEN_WIDTH,SCREEN_HEIGHT);
         SDL_RenderPresent(renderer);
+
     }
     cleanup(renderer,window);
+     
     SDL_Quit();
     return 0;
 }

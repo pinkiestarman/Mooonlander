@@ -1,9 +1,9 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include <iostream>
-#include <MLhelper.h>
+#include "MLhelper.h"
 #include <utility>
 #include <string>
-#include "math.h"
+#include <math.h>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
